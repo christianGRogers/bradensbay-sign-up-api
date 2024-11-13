@@ -1,0 +1,208 @@
+@import url('https://fonts.googleapis.com/css?family=Ubuntu');
+@import url('https://fonts.googleapis.com/css?family=Ubuntu+Mono');
+
+body {
+  background: linear-gradient(45deg, #0E27FC 0%, #04071A 100%);
+  font-family: Ubuntu;
+  color: white;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+h1 {
+  color: #333;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+form {
+  background: #fff;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  max-width: 400px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+input[type="email"],
+input[type="password"],
+input[type="text"],
+button {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 25px;
+  border: 1px solid #ddd;
+}
+
+button {
+  background-color: #007BFF;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+#recaptcha-container {
+  margin: 10px 0;
+}
+
+#verify-code-form {
+  display: none;
+}
+
+/* Additional styles for the terminal */
+#container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+#terminal {
+  width: 70vw;
+  height: 65vh;
+  box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+#terminal__bar {
+  display: flex;
+  width: 100%;
+  height: 30px;
+  align-items: center;
+  padding: 0 8px;
+  box-sizing: border-box;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  background: linear-gradient(#504b45 0%, #3c3b37 100%);
+}
+
+#bar__buttons {
+  display: flex;
+  align-items: center;
+}
+
+.bar__button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+  margin-right: 5px;
+  font-size: 8px;
+  height: 12px;
+  width: 12px;
+  box-sizing: border-box;
+  border: none;
+  border-radius: 100%;
+  background: linear-gradient(#7d7871 0%, #595953 100%);
+  text-shadow: 0px 1px 0px rgba(255, 255, 255, 0.2);
+  box-shadow: 0px 0px 1px 0px #41403A, 0px 1px 1px 0px #474642;
+}
+
+.bar__button:hover {
+  cursor: pointer;
+}
+
+.bar__button:focus {
+  outline: none;
+}
+
+#bar__button--exit {
+  background: linear-gradient(#f37458 0%, #de4c12 100%);
+  background-clip: padding-box;
+}
+#bar__button--plus {
+  background: linear-gradient(hsl(103, 78%, 51%) 0%, #19d600 100%);
+  background-clip: padding-box;
+}
+
+#bar__user {
+  color: #d5d0ce;
+  margin-left: 6px;
+  font-size: 14px;
+  line-height: 15px;
+}
+
+#terminal__body {
+  background: black;
+  font-family: 'Ubuntu Mono';
+  height: calc(100% - 30px);
+  padding-top: 100px; /* Increased padding to make space for #logosignup */
+  margin-top: -1px;
+  color: white;
+  position: relative;
+  max-height: 400px; /* Adjust the height as needed */
+  overflow-y: auto;
+}
+
+/* Logo and signup fixed at top */
+#logosignup {
+  width: calc(100% - 20px); /* Allow padding from edges */
+  background-color: black; /* Match the terminal background */
+  text-align: left;
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 10;
+}
+
+#logosignup img {
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 10px; /* Space between logo and signup link */
+}
+
+
+
+#logosignup a:hover {
+  text-decoration: underline;
+}
+
+
+#terminal__prompt {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+}
+
+#terminal__prompt--user {
+  color: #7eda28;
+}
+
+#terminal__prompt--location,
+#terminal__prompt--bling,
+#terminal__input {
+  color: white;
+  font-family: 'Ubuntu Mono';
+  margin-left: 6px;
+}
+
+#terminal__input {
+  background-color: black;
+  border: none;
+  padding: 2px 8px;
+  width: auto;
+  flex-grow: 1;
+}
+
+#terminal__input:focus {
+  outline: none;
+}
+
+#terminal__prompt img {
+  margin-bottom: 20px;
+}
+
+#terminal__prompt a {
+  display: block;
+  margin-bottom: 20px;
+}
