@@ -1,210 +1,213 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Signup for bradensbay.com</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Ubuntu Terminal</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" type="image/png" href="https://img.icons8.com/ios-filled/50/b.png">
-    <link href="https://fonts.googleapis.com/css?family=Ubuntu|Ubuntu+Mono&display=swap" rel="stylesheet">
-    <style>
-        /* General body and background styling */
-        body {
-            background: linear-gradient(45deg, #0E27FC 0%, #04071A 100%);
-            font-family: 'Ubuntu', sans-serif;
-            color: white;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
-            font-size: 15px;
-        }
-
-        h1 {
-            color: #FFFFFF;
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        /* Terminal container styling */
-        #terminal {
-            width: 700px;
-            max-width: 100%;
-            background-color: black;
-            color: white;
-            font-family: 'Ubuntu Mono', monospace;
-            border-radius: 10px;
-            margin-top: 20px;
-            overflow: hidden;
-        }
-
-        #terminal__bar {
-            max-height: 10px;
-            background: linear-gradient(#504b45, #3c3b37);
-            padding: 8px;
-            display: flex;
-            align-items: center;
-            color: #D5D0CE;
-        }
-
-        .link-group {
-            margin-left: auto;
-            display: flex;
-        }
-
-        .link-group a {
-            color: #4DA8DA;
-            text-decoration: none;
-            margin-left: 10px;
-        }
-
-        .link-group a:hover {
-            color: #00CFFF;
-        }
-
-        #terminal__body {
-            padding: 20px;
-            overflow-y: auto;
-            height: 700px;
-        }
-
-        /* Form styling */
-        form {
-            background: #000000;
-            padding: 20px;
-            border-radius: 5px;
-            width: 100%;
-            max-width: 600px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        input[type="email"],
-        input[type="password"],
-        input[type="text"],
-        button {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 25px;
-            border: 1px solid #ddd;
-            font-family: 'Ubuntu Mono', monospace;
-        }
-
-        button {
-            background-color: #007BFF;
-            color: white;
-            border: none;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        button:hover {
-            background-color: #0056b3;
-        }
-
-        #recaptcha-container {
-            margin: 10px 0;
-        }
-
-        #verify-code-form {
-            display: none;
-        }
-    </style>
+    <link rel="stylesheet" href="https://prompt.bradensbay.com/style.css">
 </head>
 <body>
+    <!-- Mobile Notification -->
+    <div id="mobile-notification">
+        <p>
+            Hello, you are using a mobile device. This is still a beta app and will perform better in a desktop environment.
+        </p>
+        <button id="dismiss-button">Okay</button>
+    </div>
+
+    <!-- Terminal UI -->
     <div id="terminal">
         <div id="terminal__bar">
-            <span style="margin-right: 8px;">🔴🟡🟢</span>
-            <span id="bar__user">bradensbay.com</span>
-
+            <p id="bar__user">user@bradensbay.com ~</p>
+            <div class="link-group">
+                <a href="https://prompt.bradensbay.com" style="color: #7eda28;"> Back </a>
+                <a href="readme.html" target="_blank" style="color: #7eda28; margin-left: 16px;"> Help </a>
+              </div>
         </div>
-        
+
         <div id="terminal__body">
-            <h1>Signup</h1>
-            <form id="signup-form">
-                <input type="email" id="email" placeholder="Email" required>
-                <input type="password" id="password" placeholder="Password" required>
-                <button type="submit">Sign Up</button>
-            </form>
-
-            <div id="recaptcha-container"></div>  
-
-            <form id="verify-code-form">
-                <input type="text" id="verification-code" placeholder="Verification Code" required>
-                <button type="submit">Verify Code</button>
-            </form>
+            <div id="logosignup" >
+                <img src="https://prompt.bradensbay.com/logo.png" alt="logo" class="terminal-logo" style="width:200px; height:50px;">
+            </div>
+            
+            <div id="terminal__prompt">
+                <span id="terminal__prompt--user">email:</span>
+                <span id="terminal__prompt--location">~</span>
+                <span id="terminal__prompt--bling">$</span>
+                <input type="text" id="terminal__input" autofocus>
+            </div>
         </div>
     </div>
 
     <script type="module">
-        // Import the necessary Firebase functions
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, RecaptchaVerifier, signInWithPhoneNumber, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+        import { 
+            getAuth, 
+            createUserWithEmailAndPassword, 
+            signInWithEmailAndPassword, 
+            sendEmailVerification,
+            onAuthStateChanged 
+        } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
 
-        // Your Firebase configuration
+
+        import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
+
+        // Firebase configuration
         const firebaseConfig = {
-            apiKey: "AIzaSyDmdf8NhoFAzXKGuBWYq5XoDrM5eNClgOg",
-            authDomain: "bradensbay-1720893101514.firebaseapp.com",
-            projectId: "bradensbay-1720893101514",
-            storageBucket: "bradensbay-1720893101514",
-            messagingSenderId: "280971564912",
-            appId: "1:280971564912:web:989fff5191d0512c1b21b5",
-            measurementId: "G-DNJS8CVKWD"
+                apiKey: "AIzaSyDmdf8NhoFAzXKGuBWYq5XoDrM5eNClgOg", ///this is not a paid api key lol only for login sorry to get your hopes up hacker
+                authDomain: "bradensbay-1720893101514.firebaseapp.com",
+                databaseURL: "https://bradensbay-1720893101514-default-rtdb.firebaseio.com/",
+                projectId: "bradensbay-1720893101514",
+                storageBucket: "bradensbay-1720893101514.appspot.com",
+                messagingSenderId: "280971564912",
+                appId: "1:280971564912:web:989fff5191d0512c1b21b5",
+                measurementId: "G-DNJS8CVKWD"
+            };
+
+            const app = initializeApp(firebaseConfig);
+            const auth = getAuth(app);
+            const database = getDatabase(app);
+
+// Monitor user state and check for email verification
+        onAuthStateChanged(auth, async (user) => {
+            if (user && !user.emailVerified) {
+                await checkEmailVerification(user);
+            } else if (user && user.emailVerified) {
+                displayOutput("Email verified! Redirecting...");
+                redirectToPrompt();
+            }
+        });
+
+        let userState = {
+            email: "",
+            uid: "",
+            state: "awaitingEmail",
+            contPwd: "",
+            action: "signup", // Default action is signup; toggle to 'login' if needed.
         };
-
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-
-        // Handle sign-up form submission
-        document.getElementById('signup-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-
+        async function checkEmailVerification(user) {
             try {
-                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-                const user = userCredential.user;
+                await user.reload(); // Refresh user data
+                if (user.emailVerified) {
+                    displayOutput("Email verified! Redirecting...");
+                    redirectToPrompt();
+                }
+            } catch (error) {
+                displayOutput(`Error checking verification: ${error.message}`);
+            }
+        }
 
-                // Send verification email
-                await sendEmailVerification(user);
-                alert("An email has been sent to your inbox. Please confirm to sign in.");
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const terminalInput = document.getElementById("terminal__input");
+
+        terminalInput.addEventListener("keydown", async (event) => {
+            if (event.key === "Enter") {
+                const command = terminalInput.value.trim();
+                terminalInput.value = "";
+                await handleCommand(command);
+            }
+        });
+
+        setupMobileNotification();
+    });
+
+    function setupMobileNotification() {
+        const notification = document.getElementById("mobile-notification");
+        const dismissButton = document.getElementById("dismiss-button");
+
+        if (/iPhone|iPad|iPod|Android|BlackBerry|Windows Phone/i.test(navigator.userAgent)) {
+            notification.style.display = "block";
+            dismissButton.addEventListener("click", () => {
+                notification.style.display = "none";
+            });
+        }
+    }
+
+    async function handleCommand(command) {
+        if (userState.state === "awaitingEmail") {
+            userState.email = command;
+            userState.state = "awaitingPassword";
+            updatePrompt("password:", true);
+        } else if (userState.state === "awaitingPassword") {
+            if (userState.action === "signup") {
+                await signupUser(userState.email, command);
+            } else {
+                await loginUser(userState.email, command);
+            }
+        }
+    }
+    async function signupUser(email, password) {
+        try {
+            // Create user with email and password
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            userState.uid = userCredential.user.uid;
+
+            // Send verification email
+            await sendEmailVerification(userCredential.user);
+            userState.state = "emailVerificationSent";
+
+            displayOutput("Signup successful! A verification email has been sent. Please check your email to verify your account.");
+            updatePrompt("email:");
+            displayOutput("Login successful! Redirecting...In 15 seconds");
+            setTimeout(() => {
                 window.location.href = "https://prompt.bradensbay.com";
-                
+            }, 15000);
+        } catch (error) {
+            displayOutput(`Signup failed: ${error.message}`);
+            resetPrompt();
+        }
+    }
 
-                // Send the UID and email to the server
-                // await fetch('http://99.233.122.60:3001/run-bash-script', {
-                //     method: 'POST',
-                //     headers: {
-                //         'Content-Type': 'application/json'
-                //     },
-                //     body: JSON.stringify({
-                //         uid: user.uid,
-                //         email: user.email
-                //     })
-                // });
-            } catch (error) {
-                console.error(error.message);
-                alert("There already exists an account with this email.");
-            }
-        });
+    async function loginUser(email, password) {
+    try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
 
-        // Handle verification code form submission
-        document.getElementById('verify-code-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const code = document.getElementById('verification-code').value;
+        if (!userCredential.user.emailVerified) {
+            displayOutput("Login failed: Please verify your email before logging in.");
+            resetPrompt();
+            return;
+        }
 
-            try {
-                const result = await window.confirmationResult.confirm(code);
-                const user = result.user;
-                console.log('User signed in successfully.');
-            } catch (error) {
-                console.error(error.message);
-            }
-        });
-    </script>
+        displayOutput("Login successful! Redirecting...");
+        redirectToPrompt();
+    } catch (error) {
+        displayOutput(`Login failed: ${error.message}`);
+        resetPrompt();
+    }
+}
+
+
+
+    function redirectToPrompt() {
+        setTimeout(() => {
+            window.location.href = "https://prompt.bradensbay.com";
+        }, 1500); // Wait for 1.5 seconds before redirection
+    }
+
+    function updatePrompt(text, hideInput = false) {
+        const promptUser = document.getElementById("terminal__prompt--user");
+        const terminalInput = document.getElementById("terminal__input");
+
+        promptUser.innerText = text;
+        terminalInput.type = hideInput ? "password" : "text";
+    }
+
+    function resetPrompt() {
+        userState.state = "awaitingEmail";
+        updatePrompt("email:");
+    }
+
+    function displayOutput(message) {
+        const terminalBody = document.getElementById("terminal__body");
+        const outputDiv = document.createElement("div");
+
+        outputDiv.className = "terminal__output";
+        outputDiv.innerHTML = `<span>${message}</span>`;
+        terminalBody.insertBefore(outputDiv, document.getElementById("terminal__prompt"));
+    }
+</script>
 </body>
 </html>
-
