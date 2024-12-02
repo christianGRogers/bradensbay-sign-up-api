@@ -33,7 +33,7 @@
             </div>
             
             <div id="terminal__prompt">
-                <span id="terminal__prompt--user">email:</span>
+                <span id="terminal__prompt--user">new-email:</span>
                 <span id="terminal__prompt--location">~</span>
                 <span id="terminal__prompt--bling">$</span>
                 <input type="text" id="terminal__input" autofocus>
@@ -197,7 +197,7 @@
 
     function resetPrompt() {
         userState.state = "awaitingEmail";
-        updatePrompt("email:");
+        updatePrompt("new-email:");
     }
 
     function displayOutput(message) {
