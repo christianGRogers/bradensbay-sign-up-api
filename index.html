@@ -151,25 +151,30 @@
             userState.state = "emailVerificationSent";
 
             displayOutput("Signup successful! A verification email has been sent. Please check your email to verify your account.");
-            updatePrompt("email:");
+            updatePrompt("wait...");
 
             // Countdown for redirection
             let countdown = 15;
-            const countdownMessage = document.createElement("span");
+
+            // Create the countdown message element and append it to the terminal body
+            const countdownMessage = document.createElement("div");
+            countdownMessage.className = "terminal__output";
             countdownMessage.innerHTML = `Login successful! Redirecting in ${countdown} seconds...`;
-            displayOutput(countdownMessage.outerHTML);
+            const terminalBody = document.getElementById("terminal__body");
+            terminalBody.insertBefore(countdownMessage, document.getElementById("terminal__prompt"));
 
             const interval = setInterval(() => {
                 countdown--;
-                countdownMessage.innerHTML = `Login successful! Redirecting in ${countdown} seconds...`;
-                const outputDiv = document.querySelector(".terminal__output:last-child");
-                if (outputDiv) outputDiv.innerHTML = countdownMessage.outerHTML;
+                if (countdown >= 0) {
+                    countdownMessage.innerHTML = `Login successful! Redirecting in ${countdown} seconds...`;
+                }
 
                 if (countdown === 0) {
                     clearInterval(interval);
                     window.location.href = "https://prompt.bradensbay.com";
                 }
             }, 1000);
+
 
         } catch (error) {
             displayOutput(`Signup failed: ${error.message}`);
