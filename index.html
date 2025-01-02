@@ -47,16 +47,6 @@
 
 
 
-// Monitor user state and check for email verification
-        onAuthStateChanged(auth, async (user) => {
-            if (user && !user.emailVerified) {
-                await checkEmailVerification(user);
-            } else if (user && user.emailVerified) {
-                displayOutput("Email verified! Redirecting...");
-                redirectToPrompt();
-            }
-        });
-
         let userState = {
             email: "",
             uid: "",
@@ -64,17 +54,7 @@
             contPwd: "",
             action: "signup", // Default action is signup; toggle to 'login' if needed.
         };
-        async function checkEmailVerification(user) {
-            try {
-                await user.reload(); // Refresh user data
-                if (user.emailVerified) {
-                    displayOutput("Email verified! Redirecting...");
-                    redirectToPrompt();
-                }
-            } catch (error) {
-                displayOutput(`Error checking verification: ${error.message}`);
-            }
-        }
+
 
 
     document.addEventListener("DOMContentLoaded", () => {
