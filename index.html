@@ -23,7 +23,7 @@
             <p id="bar__user">user@bradensbay.com ~</p>
             <div class="link-group">
                 <a href="https://prompt.bradensbay.com" style="color: #7eda28;"> Back </a>
-                <a href="readme.html" target="_blank" style="color: #7eda28; margin-left: 16px;"> Help </a>
+                <a href="https://prompt.bradensbay.com/readme.html" target="_blank" style="color: #7eda28; margin-left: 16px;"> Help </a>
               </div>
         </div>
 
@@ -42,34 +42,10 @@
     </div>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-        import { 
-            getAuth, 
-            createUserWithEmailAndPassword, 
-            signInWithEmailAndPassword, 
-            sendEmailVerification,
-            onAuthStateChanged 
-        } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
 
 
-        import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
 
-        // Firebase configuration
-        const firebaseConfig = {
-                apiKey: "AIzaSyDmdf8NhoFAzXKGuBWYq5XoDrM5eNClgOg", ///this is not a paid api key lol only for login sorry to get your hopes up hacker
-                authDomain: "bradensbay-1720893101514.firebaseapp.com",
-                databaseURL: "https://bradensbay-1720893101514-default-rtdb.firebaseio.com/",
-                projectId: "bradensbay-1720893101514",
-                storageBucket: "bradensbay-1720893101514.appspot.com",
-                messagingSenderId: "280971564912",
-                appId: "1:280971564912:web:989fff5191d0512c1b21b5",
-                measurementId: "G-DNJS8CVKWD"
-            };
 
-            const app = initializeApp(firebaseConfig);
-            const auth = getAuth(app);
-            auth.setPersistence('none');
-            const database = getDatabase(app);
 
 // Monitor user state and check for email verification
         onAuthStateChanged(auth, async (user) => {
@@ -133,49 +109,56 @@
             userState.state = "awaitingPassword";
             updatePrompt("password:", true);
         } else if (userState.state === "awaitingPassword") {
-            if (userState.action === "signup") {
-                await signupUser(userState.email, command);
-            } else {
-                await loginUser(userState.email, command);
-            }
+            await signupUser(userState.email, command);
         }
     }
     async function signupUser(email, password) {
         try {
-            // Create user with email and password
-            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-            userState.uid = userCredential.user.uid;
+            // Call the endpoint with email and password
+            const response = await fetch("https://new-user.bradensbay.com/signup", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ email, password }),
+            });
 
-            // Send verification email
-            await sendEmailVerification(userCredential.user);
-            userState.state = "emailVerificationSent";
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
 
-            displayOutput("Signup successful! A verification email has been sent. Please check your email to verify your account.");
-            updatePrompt("wait...");
+            const data = await response.json();
 
-            // Countdown for redirection
-            let countdown = 15;
+            if (data.success) {
+                userState.state = "emailVerificationSent";
 
-            // Create the countdown message element and append it to the terminal body
-            const countdownMessage = document.createElement("div");
-            countdownMessage.className = "terminal__output";
-            countdownMessage.innerHTML = `Login successful! Redirecting in ${countdown} seconds...`;
-            const terminalBody = document.getElementById("terminal__body");
-            terminalBody.insertBefore(countdownMessage, document.getElementById("terminal__prompt"));
+                displayOutput("Signup successful! A verification email has been sent. Please check your email to verify your account.");
+                updatePrompt("wait...");
 
-            const interval = setInterval(() => {
-                countdown--;
-                if (countdown >= 0) {
-                    countdownMessage.innerHTML = `Login successful! Redirecting in ${countdown} seconds...`;
-                }
+                // Countdown for redirection
+                let countdown = 15;
 
-                if (countdown === 0) {
-                    clearInterval(interval);
-                    window.location.href = "https://prompt.bradensbay.com";
-                }
-            }, 1000);
+                // Create the countdown message element and append it to the terminal body
+                const countdownMessage = document.createElement("div");
+                countdownMessage.className = "terminal__output";
+                countdownMessage.innerHTML = `Login successful! Redirecting in ${countdown} seconds...`;
+                const terminalBody = document.getElementById("terminal__body");
+                terminalBody.insertBefore(countdownMessage, document.getElementById("terminal__prompt"));
 
+                const interval = setInterval(() => {
+                    countdown--;
+                    if (countdown >= 0) {
+                        countdownMessage.innerHTML = `Login successful! Redirecting in ${countdown} seconds...`;
+                    }
 
+                    if (countdown === 0) {
+                        clearInterval(interval);
+                        window.location.href = "https://prompt.bradensbay.com";
+                    }
+                }, 1000);
+            } else {
+                throw new Error(data.message || "Signup failed.");
+            }
         } catch (error) {
             displayOutput(`Signup failed: ${error.message}`);
             resetPrompt();
@@ -183,23 +166,7 @@
     }
 
 
-    async function loginUser(email, password) {
-    try {
-        const userCredential = await signInWithEmailAndPassword(auth, email, password);
 
-        if (!userCredential.user.emailVerified) {
-            displayOutput("Login failed: Please verify your email before logging in.");
-            resetPrompt();
-            return;
-        }
-
-        displayOutput("Login successful! Redirecting...");
-        redirectToPrompt();
-    } catch (error) {
-        displayOutput(`Login failed: ${error.message}`);
-        resetPrompt();
-    }
-}
 
 
 
